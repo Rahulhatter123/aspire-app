@@ -3,6 +3,7 @@
     <Project Path="Clean_Architecture_Sample.Aspire/CLean_Architecture_Sample.Aspire.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Clean_Architecture_Sample.ProductIntegrationTest/Clean_Architecture_Sample.ProductIntegrationTest.csproj" />
     <Project Path="tests/Clean_Architecture_Sample.ProductUnitTest/Clean_Architecture_Sample.ProductUnitTest.csproj" />
   </Folder>
   <Project Path="Clean_Architecture_Sample.API/Clean_Architecture_Sample.API.csproj" />
