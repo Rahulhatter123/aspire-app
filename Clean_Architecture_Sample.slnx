@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Clean_Architecture_Sample.Aspire/">
+    <Project Path="Clean_Architecture_Sample.Aspire/CLean_Architecture_Sample.Aspire.csproj" />
+  </Folder>
+  <Project Path="Clean_Architecture_Sample.API/Clean_Architecture_Sample.API.csproj" />
+  <Project Path="Clean_Architecture_Sample.Application/Clean_Architecture_Sample.Application.csproj" />
+  <Project Path="Clean_Architecture_Sample.Domain/Clean_Architecture_Sample.Domain.csproj" />
+  <Project Path="Clean_Architecture_Sample.Infrastructure/Clean_Architecture_Sample.Infrastructure.csproj" />
+</Solution>
