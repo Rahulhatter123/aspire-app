@@ -26,21 +26,17 @@ jobs:
           git diff origin/dev...HEAD > pr.diff
 
       # 4. Call Codex (OpenAI API)
-      - name: AI Review (Codex Detailed)
+      - name: AI Review (Codex Fixed)
         id: ai_review
         run: |
+          DIFF=$(cat pr.diff | jq -Rs .)
+      
           RESPONSE=$(curl -s https://api.openai.com/v1/responses \
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
             -d "{
               \"model\": \"gpt-4.1\",
-              \"input\": \"You are a senior .NET reviewer. Analyze this PR diff and respond in JSON format:
-              {
-                \\\"decision\\\": \\\"APPROVED or REJECT\\\",
-                \\\"reason\\\": \\\"short explanation\\\"
-              }
-              PR DIFF:
-              $(cat pr.diff)\"
+              \"input\": \"You are a senior .NET reviewer. Analyze this PR diff and respond in JSON format with decision and reason.\n\nPR DIFF:\n\" + $DIFF
             }")
       
           echo "$RESPONSE" > result.json
@@ -48,10 +44,7 @@ jobs:
           echo "=== FULL AI RESPONSE ==="
           cat result.json
       
-          # Extract decision
           DECISION=$(echo "$RESPONSE" | grep -o '"decision":"[^"]*"' | cut -d':' -f2 | tr -d '"')
-      
-          # Extract reason
           REASON=$(echo "$RESPONSE" | grep -o '"reason":"[^"]*"' | cut -d':' -f2- | tr -d '"')
       
           echo "Decision: $DECISION"
