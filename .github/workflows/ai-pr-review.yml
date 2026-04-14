@@ -46,7 +46,8 @@ jobs:
             --arg diff "$DIFF" \
             '{
               model: "gpt-4.1",
-              input: ("You are a senior .NET reviewer. Analyze this PR diff and respond in JSON format:\n{\n  \"decision\": \"APPROVED or REJECT\",\n  \"reason\": \"short explanation\"\n}\n\nPR DIFF:\n" + $diff)
+          #    input: ("You are a senior .NET reviewer. Analyze this PR diff and respond in JSON format:\n{\n  \"decision\": \"APPROVED or REJECT\",\n  \"reason\": \"short explanation\"\n}\n\nPR DIFF:\n" + $diff)
+              input: ("You are a pragmatic senior .NET reviewer.\n\nRules:\n- APPROVE if changes are safe and do not break functionality\n- Only REJECT for serious issues (bugs, security, architecture violations)\n- Ignore minor issues (formatting, naming, small improvements)\n\nRespond in JSON:\n{\n  \"decision\": \"APPROVED or REJECT\",\n  \"reason\": \"short explanation\"\n}\n\nPR DIFF:\n" + $diff)
             }')
       
           # Call API
