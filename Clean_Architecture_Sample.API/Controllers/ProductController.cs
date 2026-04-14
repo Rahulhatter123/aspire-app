@@ -17,7 +17,7 @@ public class ProductController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("products")]
+    [HttpGet("product-list")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _mediator.Send(new GetAllProductsQuery());
