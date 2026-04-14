@@ -90,12 +90,9 @@ jobs:
       - name: Comment on PR
         run: |
           gh pr comment ${{ github.event.pull_request.number }} \
-            --body "🤖 AI Review Result: **${{ steps.ai_review.outputs.decision }}**
-
-          Reason:
-          ${{ steps.ai_review.outputs.reason }}"
-                  env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            --body "🤖 AI Review Result: **${{ steps.ai_review.outputs.decision }}**%0A%0AReason:%0A${{ steps.ai_review.outputs.reason }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # 6. Fail if rejected
       - name: Fail if AI rejects
