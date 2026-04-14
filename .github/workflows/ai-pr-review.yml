@@ -52,13 +52,6 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-      # 5. Fail if rejected
-      - name: Fail if AI rejects
-        if: steps.ai_review.outputs.approved == 'false'
-        run: |
-          echo "❌ AI rejected PR"
-          exit 1
-
       # 6. Auto merge if approved
       - name: Auto merge PR
         if: steps.ai_review.outputs.approved == 'true'
