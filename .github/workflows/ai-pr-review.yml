@@ -1,5 +1,14 @@
 name: AI PR Review with Codex
 
+# ✅ Required permissions (VERY IMPORTANT)
+permissions:
+  contents: write
+  pull-requests: write
+
+# ✅ Fix Node.js warning (future-proof)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   pull_request:
     branches: [dev]
@@ -11,7 +20,7 @@ jobs:
     steps:
       # 1. Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0   # REQUIRED for diff
 
@@ -77,14 +86,25 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-      # 5. Fail if rejected
+      # 5. Add PR Comment (AI feedback)
+      - name: Comment on PR
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "🤖 AI Review Result: **${{ steps.ai_review.outputs.decision }}**
+
+          Reason:
+          ${{ steps.ai_review.outputs.reason }}"
+                  env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 6. Fail if rejected
       - name: Fail if AI rejects
         if: steps.ai_review.outputs.approved == 'false'
         run: |
           echo "❌ AI rejected PR"
           exit 1
 
-      # 6. Auto merge if approved
+      # 7. Auto merge if approved
       - name: Auto merge PR
         if: steps.ai_review.outputs.approved == 'true'
         run: |
