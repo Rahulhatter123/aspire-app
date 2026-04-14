@@ -17,6 +17,7 @@ public class ProductController : ControllerBase
         _mediator = mediator;
     }
 
+    //Test
     [HttpGet("products")]
     public async Task<IActionResult> GetAll()
     {
