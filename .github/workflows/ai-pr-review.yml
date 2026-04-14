@@ -29,28 +29,30 @@ jobs:
       - name: AI Review (Codex)
         id: ai_review
         run: |
-          RESPONSE=$(curl -s https://api.openai.com/v1/responses \
+          RESPONSE=$(curl https://api.openai.com/v1/responses \
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
             -d "{
               \"model\": \"gpt-4.1\",
-              \"input\": \"Reply ONLY with APPROVED or REJECT. No explanation.\\n$(cat pr.diff)\"
+              \"input\": \"You are a senior .NET reviewer. Review this PR diff for bugs, clean architecture violations, CQRS issues. Reply ONLY with APPROVED or REJECT:\\n$(cat pr.diff)\"
             }")
-      
+
           echo "$RESPONSE" > result.json
-      
-          # Extract clean result
-          RESULT=$(echo "$RESPONSE" | tr -d '\n' | grep -o "APPROVED\|REJECT" | head -n 1)
-      
-          echo "AI RESULT: $RESULT"
-      
-          if [ "$RESULT" = "APPROVED" ]; then
+
+          if grep -q "APPROVED" result.json; then
             echo "approved=true" >> $GITHUB_OUTPUT
           else
             echo "approved=false" >> $GITHUB_OUTPUT
           fi
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      # 5. Fail if rejected
+      - name: Fail if AI rejects
+        if: steps.ai_review.outputs.approved == 'false'
+        run: |
+          echo "❌ AI rejected PR"
+          exit 1
 
       # 6. Auto merge if approved
       - name: Auto merge PR
