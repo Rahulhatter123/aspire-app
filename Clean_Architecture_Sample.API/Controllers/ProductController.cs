@@ -24,6 +24,7 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
+    //Test 1
     [HttpGet("product-id/{id}")]
     public async Task<IActionResult> Get(int id)
     {
