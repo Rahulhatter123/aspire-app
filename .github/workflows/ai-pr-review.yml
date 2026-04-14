@@ -26,20 +26,41 @@ jobs:
           git diff origin/dev...HEAD > pr.diff
 
       # 4. Call Codex (OpenAI API)
-      - name: AI Review (Codex)
+      - name: AI Review (Codex Detailed)
         id: ai_review
         run: |
-          RESPONSE=$(curl https://api.openai.com/v1/responses \
+          RESPONSE=$(curl -s https://api.openai.com/v1/responses \
             -H "Authorization: Bearer $OPENAI_API_KEY" \
             -H "Content-Type: application/json" \
             -d "{
               \"model\": \"gpt-4.1\",
-              \"input\": \"You are a senior .NET reviewer. Review this PR diff for bugs, clean architecture violations, CQRS issues. Reply ONLY with APPROVED or REJECT:\\n$(cat pr.diff)\"
+              \"input\": \"You are a senior .NET reviewer. Analyze this PR diff and respond in JSON format:
+              {
+                \\\"decision\\\": \\\"APPROVED or REJECT\\\",
+                \\\"reason\\\": \\\"short explanation\\\"
+              }
+              PR DIFF:
+              $(cat pr.diff)\"
             }")
-
+      
           echo "$RESPONSE" > result.json
-
-          if grep -q "APPROVED" result.json; then
+      
+          echo "=== FULL AI RESPONSE ==="
+          cat result.json
+      
+          # Extract decision
+          DECISION=$(echo "$RESPONSE" | grep -o '"decision":"[^"]*"' | cut -d':' -f2 | tr -d '"')
+      
+          # Extract reason
+          REASON=$(echo "$RESPONSE" | grep -o '"reason":"[^"]*"' | cut -d':' -f2- | tr -d '"')
+      
+          echo "Decision: $DECISION"
+          echo "Reason: $REASON"
+      
+          echo "decision=$DECISION" >> $GITHUB_OUTPUT
+          echo "reason=$REASON" >> $GITHUB_OUTPUT
+      
+          if [ "$DECISION" = "APPROVED" ]; then
             echo "approved=true" >> $GITHUB_OUTPUT
           else
             echo "approved=false" >> $GITHUB_OUTPUT
