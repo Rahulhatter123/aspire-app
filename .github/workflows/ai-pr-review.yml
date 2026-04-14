@@ -46,17 +46,23 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$JSON_PAYLOAD")
       
-          echo "$RESPONSE" > result.json
-      
-          echo "=== FULL AI RESPONSE ==="
-          cat result.json
+          # echo "$RESPONSE" > result.json
+          AI_TEXT=$(echo "$RESPONSE" | jq -r '.output[0].content[0].text')
+          
+          # echo "=== FULL AI RESPONSE ==="
+          # cat result.json
+
+          echo "=== AI TEXT ==="
+          echo "$AI_TEXT"
       
           # Extract decision
-          DECISION=$(echo "$RESPONSE" | grep -o '"decision":"[^"]*"' | cut -d':' -f2 | tr -d '"')
-      
+          # DECISION=$(echo "$RESPONSE" | grep -o '"decision":"[^"]*"' | cut -d':' -f2 | tr -d '"')
+          DECISION=$(echo "$AI_TEXT" | jq -r '.decision')
+          
           # Extract reason
-          REASON=$(echo "$RESPONSE" | grep -o '"reason":"[^"]*"' | cut -d':' -f2- | tr -d '"')
-      
+          # REASON=$(echo "$RESPONSE" | grep -o '"reason":"[^"]*"' | cut -d':' -f2- | tr -d '"')
+          REASON=$(echo "$AI_TEXT" | jq -r '.reason')
+
           echo "Decision: $DECISION"
           echo "Reason: $REASON"
       
